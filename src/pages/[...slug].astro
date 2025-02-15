@@ -1,0 +1,52 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from '../layouts/Layout.astro'
+import datas from "../config/datas"
+
+export const getStaticPaths = (() => {
+  return Object.entries(datas).map(([slug, value]) => ({
+    params: { slug },
+    props: { location: value },
+  }))
+}) satisfies GetStaticPaths
+
+const { location } = Astro.props
+
+let data
+try {
+  const res = await fetch('http://kefship.com/ajax/ajax_index.php', {
+    method: 'POST',
+    headers: {
+      'Accept': 'text/plain, */*; q=0.01',
+      'Accept-Encoding': 'gzip, deflate',
+      'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+      "Connection": "keep-alive",
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'Host': 'kefship.com',
+      'Origin': 'http://kefship.com',
+      'Referer': 'http://kefship.com/',
+      'X-Requested-With': 'XMLHttpRequest',
+      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    },
+    body: `boardType=${location.data}`,
+  })
+  data = await res.text()
+} catch (e) {
+  console.log("fetch error:", e)
+}
+---
+<Layout>
+  <table>
+    <thead>
+      <tr>
+        <th>선박명</th>
+        <th id="sub1">인천출발</th>
+        <th>기항지출발</th>
+        <th id="sub2">인천도착</th>
+        <th>운항상황</th>
+      </tr>
+    </thead>
+    <tbody set:html={data}>
+    </tbody>
+  </table>
+</Layout>

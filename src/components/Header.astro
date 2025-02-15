@@ -1,0 +1,13 @@
+---
+import datas from "../config/datas"
+
+
+---
+
+<header>
+  {
+    Object.entries(datas).map(([path, value]) => (
+      <a href={"/" + path}>{value.label}</a>
+    ))
+  }
+</header>
